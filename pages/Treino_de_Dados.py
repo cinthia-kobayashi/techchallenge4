@@ -13,7 +13,7 @@ import altair as alt
 #-------------------------
 #CARREGAMENTO DOS DADOS E FUNÇÕES
 #--------------------------
-dados_treinados = joblib.load('../dados/dados_treinados_fase4.joblib')
+dados_treinados = joblib.load('dados/dados_treinados_fase4.joblib')
 df_bolsa = dados_treinados['df_bolsa_original']
 df_bolsa['Data'] = pd.to_datetime(df_bolsa['Data'], format='%d.%m.%Y')
 df_bolsa['Var%'] = df_bolsa['Var%'].str.replace("%","")
@@ -303,3 +303,4 @@ st.divider()
 
 
 st.markdown("Com esses dados, treinamos com o modelo autoarima que conta na página principal desse dashboard.")
+

@@ -23,4 +23,7 @@ pytz>=2023.3
 # (statsmodels já inclui esses)
 
 # Optional: Para melhor performance
+
 numba>=0.57.0
+
+statsforecast>=1.6.0

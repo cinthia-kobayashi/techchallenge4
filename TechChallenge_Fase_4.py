@@ -362,7 +362,7 @@ st.caption("*Nota: Acurácia para horizontes maiores pode variar.*")
 feriados = [pd.to_datetime(data).date() for data in feriados_brasil]
 
 
-st.subheader("2. 📅 Previsão para Data Específica")
+st.subheader("Previsão para Data Específica")
 
 st.caption(f"Próximos feriados: {', '.join([f.strftime('%d/%m') for f in feriados if f >= last_date.date() and f <= last_date.date() + timedelta(days=60)])}")
 
@@ -609,12 +609,11 @@ if selected_date:
                             
                             st.altair_chart(final_chart, use_container_width=True)
                             
-                            # Mostrar datas excluídas (fins de semana/feriados)
-                            if dias_corridos_necessarios > days_ahead_uteis:
-                                st.caption(f"*Foram excluídos {dias_corridos_necessarios - days_ahead_uteis} dias não úteis (fins de semana/feriados)*")
+                           
                             
                         else:
                             st.error("Não foi possível gerar previsão para a data selecionada.")
                     else:
 
                         st.error("Erro ao gerar previsão.")
+

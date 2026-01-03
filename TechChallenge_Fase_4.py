@@ -474,14 +474,7 @@ if selected_date:
                             
                             # Confiança estimada (baseada em dias úteis)
                             estimated_confidence = model_accuracy * np.exp(-0.05 * (days_ahead_uteis - 1))
-                            
-                            # Mostrar informações
-                            st.info(f"""
-                            **📊 Informações da previsão:**
-                            - **Dias úteis à frente:** {days_ahead_uteis}
-                            - **Dias corridos correspondentes:** {dias_corridos_necessarios}
-                            - **Data prevista no calendário:** {forecast_df['ds'].iloc[-1].strftime('%d/%m/%Y')}
-                            """)
+
                             
                             # Mostrar resultados principais
                             col1, col2, col3 = st.columns(3)
@@ -616,4 +609,5 @@ if selected_date:
                     else:
 
                         st.error("Erro ao gerar previsão.")
+
 

@@ -13,7 +13,7 @@ import altair as alt
 #-------------------------
 #CARREGAMENTO DOS DADOS E FUNÇÕES
 #--------------------------
-dados_treinados = joblib.load('dados\dados_treinados_fase4.joblib')
+dados_treinados = joblib.load('dados/dados_treinados_fase4.joblib')
 df_bolsa = dados_treinados['df_bolsa_original']
 df_bolsa['Data'] = pd.to_datetime(df_bolsa['Data'],format='%d.%m.%Y')
 df_bolsa['Var%'] = df_bolsa['Var%'].str.replace("%","")
@@ -623,6 +623,7 @@ with st.expander("Análise da base real"):
 
     st.subheader("**Dados do período selecionado** :material/table_chart: ")
     st.dataframe(df_filtered,column_config={"Data":st.column_config.DateColumn(format="DD/MM/YYYY")})
+
 
 
 

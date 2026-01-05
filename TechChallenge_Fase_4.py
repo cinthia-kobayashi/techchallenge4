@@ -13,12 +13,18 @@ import altair as alt
 #-------------------------
 #CARREGAMENTO DOS DADOS E FUNÇÕES
 #--------------------------
-dados_treinados = joblib.load('dados/dados_treinados_fase4.joblib')
+dados_treinados = joblib.load('dados\dados_treinados_fase4.joblib')
 df_bolsa = dados_treinados['df_bolsa_original']
 df_bolsa['Data'] = pd.to_datetime(df_bolsa['Data'],format='%d.%m.%Y')
 df_bolsa['Var%'] = df_bolsa['Var%'].str.replace("%","")
 df_bolsa['Var%'] = df_bolsa['Var%'].str.replace(",",".")
 df_bolsa['Var%'] = pd.to_numeric(df_bolsa['Var%'])
+
+sf = dados_treinados['sf']
+sf_df = dados_treinados['sf_df']
+last_date = dados_treinados['last_date']
+last_value = dados_treinados['last_value']
+crossvalidation = dados_treinados['crossvalidation']
 
 data_escolhida = datetime.now()
 def calc_forecast(data_escolhida):
@@ -42,6 +48,25 @@ def calc_forecast(data_escolhida):
     )
     
     return acc
+
+
+
+crossvalidation = dados_treinados['crossvalidation'].copy()
+crossvalidation['actual_trend'] = np.where(
+    crossvalidation['y'] > crossvalidation['y'].shift(1),
+    'subir',
+    'descer'
+)
+crossvalidation['predicted_trend_AutoARIMA'] = np.where(
+    crossvalidation['AutoARIMA'] > crossvalidation['y'].shift(1),
+    'subir',
+    'descer'
+)
+model_accuracy = accuracy_score(
+    crossvalidation['actual_trend'].dropna(),
+    crossvalidation['predicted_trend_AutoARIMA'].dropna()
+)
+
 #FERIADOS PARA SEREM RETIRADOS DE CONSIDERAÇÃO
 feriados_brasil = [
     # 2025
@@ -167,122 +192,7 @@ with st.expander("TechChallenge Fase 4 - Data viz and production models"):
 
 st.divider()
 
-st.title("IBOVESPA - Dashboard :material/analytics:")
 
-st.subheader("Histórico da bolsa de 01/06/2023 a 26/12/2025")
-
-st.write("Selecione o intervalo para analisar no gráfico:")
-
-col1, col2,col3,col4 = st.columns([3,1,1,3])
-start_date = col2.date_input("Data inicial", value=df_bolsa["Data"].max().replace(day=1),format="DD/MM/YYYY")
-end_date = col3.date_input("Data final", value=df_bolsa["Data"].max(),format="DD/MM/YYYY")
-start_date = pd.to_datetime(start_date)
-end_date = pd.to_datetime(end_date)
-
-
-#--------------------------
-#INTERAÇÃO COM A BASE ORIGINAL PARA O USUÁRIO
-#--------------------------
-graf_principal = alt.Chart(df_bolsa).mark_line().encode(
-    alt.X("Data:T", title="Data"),
-    alt.Y("Último:Q", title="Fechamento", scale=alt.Scale(zero=False))
-).properties(height=400)
-
-graf_destaque = alt.Chart(pd.DataFrame({
-    'start': [start_date],
-    'end': [end_date]
-})).mark_rect(
-    opacity=0.3,
-    color='lightblue'
-).encode(
-    x='start:T',
-    x2='end:T'
-)
-linha_inicial = alt.Chart(pd.DataFrame({'date': [start_date]})).mark_rule(
-    color='red',
-    strokeWidth=2
-).encode(x='date:T')
-
-linha_final = alt.Chart(pd.DataFrame({'date': [end_date]})).mark_rule(
-    color='red',
-    strokeWidth=2
-).encode(x='date:T')
-
-# Combinar todos os gráficos
-graf_final_camadas = alt.layer(
-    graf_principal,
-    graf_destaque,
-    linha_inicial,
-    linha_final
-).properties(height=400)
-
-# Exibir o gráfico
-col1, col2, col3 = st.columns([70,5,25])
-col1.altair_chart(graf_final_camadas, use_container_width=True)
-
-
-
-df_filtered = df_bolsa[
-    (df_bolsa["Data"] >= pd.to_datetime(start_date)) & 
-    (df_bolsa["Data"] <= pd.to_datetime(end_date))
-]
-# Encontrar a data do maior e menor 'Último'
-data_max_ultimo = df_filtered.loc[df_filtered['Último'].idxmax(), 'Data']
-data_min_ultimo = df_filtered.loc[df_filtered['Último'].idxmin(), 'Data']
-
-# Encontrar a data do maior e menor 'Var%'
-data_max_var = df_filtered.loc[df_filtered['Var%'].idxmax(), 'Data']
-data_min_var = df_filtered.loc[df_filtered['Var%'].idxmin(), 'Data']
-
-col3.subheader("**Análise do período**")
-col3.markdown("---")
-
-# Maior Último
-col3.markdown(f"**Maior Valor:** {df_filtered['Último'].max():.2f} | **Data:** {data_max_ultimo.strftime('%d/%m/%Y')}")
-#col2.markdown(f"*Data:* {data_max_ultimo.strftime('%d/%m/%Y')}")
-
-# Menor Último  
-col3.markdown(f"**Menor Valor:** {df_filtered['Último'].min():.2f} | **Data:** {data_min_ultimo.strftime('%d/%m/%Y')}")
-#col2.markdown(f"*Data:* {data_min_ultimo.strftime('%d/%m/%Y')}")
-
-# Variação
-
-col3.markdown(f"**Maior Variação (%):** {df_filtered['Var%'].max():.2f}% | **Data:** {data_max_var.strftime('%d/%m/%Y')}")
-#col2.markdown(f"*Data:* {data_max_var.strftime('%d/%m/%Y')}")
-
-col3.markdown(f"**Menor Variação (%):** {df_filtered['Var%'].min():.2f}% | **Data:** {data_min_var.strftime('%d/%m/%Y')}")
-#col2.markdown(f"*Data:* {data_min_var.strftime('%d/%m/%Y')}")
-
-
-st.subheader("**Dados do período selecionado** :material/table_chart: ")
-st.dataframe(df_filtered,column_config={"Data":st.column_config.DateColumn(format="DD/MM/YYYY")})
-
-
-sf = dados_treinados['sf']
-sf_df = dados_treinados['sf_df']
-last_date = dados_treinados['last_date']
-last_value = dados_treinados['last_value']
-crossvalidation = dados_treinados['crossvalidation']
-
-crossvalidation = dados_treinados['crossvalidation'].copy()
-crossvalidation['actual_trend'] = np.where(
-    crossvalidation['y'] > crossvalidation['y'].shift(1),
-    'subir',
-    'descer'
-)
-crossvalidation['predicted_trend_AutoARIMA'] = np.where(
-    crossvalidation['AutoARIMA'] > crossvalidation['y'].shift(1),
-    'subir',
-    'descer'
-)
-model_accuracy = accuracy_score(
-    crossvalidation['actual_trend'].dropna(),
-    crossvalidation['predicted_trend_AutoARIMA'].dropna()
-)
-
-
-
-st.divider()
 st.title("Previsão de Tendência da Bolsa :material/whatshot:")
 
 col1, col2, col3 = st.columns([2,2,6])
@@ -362,7 +272,7 @@ st.caption("*Nota: Acurácia para horizontes maiores pode variar.*")
 feriados = [pd.to_datetime(data).date() for data in feriados_brasil]
 
 
-st.subheader("Previsão para Data Específica")
+st.subheader("2. 📅 Previsão para Data Específica")
 
 st.caption(f"Próximos feriados: {', '.join([f.strftime('%d/%m') for f in feriados if f >= last_date.date() and f <= last_date.date() + timedelta(days=60)])}")
 
@@ -474,7 +384,14 @@ if selected_date:
                             
                             # Confiança estimada (baseada em dias úteis)
                             estimated_confidence = model_accuracy * np.exp(-0.05 * (days_ahead_uteis - 1))
-
+                            
+                            # Mostrar informações
+                            st.info(f"""
+                            **📊 Informações da previsão:**
+                            - **Dias úteis à frente:** {days_ahead_uteis}
+                            - **Dias corridos correspondentes:** {dias_corridos_necessarios}
+                            - **Data prevista no calendário:** {forecast_df['ds'].iloc[-1].strftime('%d/%m/%Y')}
+                            """)
                             
                             # Mostrar resultados principais
                             col1, col2, col3 = st.columns(3)
@@ -602,12 +519,112 @@ if selected_date:
                             
                             st.altair_chart(final_chart, use_container_width=True)
                             
-                           
+                            # Mostrar datas excluídas (fins de semana/feriados)
+                            if dias_corridos_necessarios > days_ahead_uteis:
+                                st.caption(f"*Foram excluídos {dias_corridos_necessarios - days_ahead_uteis} dias não úteis (fins de semana/feriados)*")
                             
                         else:
                             st.error("Não foi possível gerar previsão para a data selecionada.")
                     else:
-
                         st.error("Erro ao gerar previsão.")
+
+st.divider()
+
+st.markdown("Aqui só uma demonstração de interação com a base de dados real, analisando o IBOVESPA na base que foi treinado o nosso modelo.")
+
+with st.expander("Análise da base real"):
+
+    st.title("IBOVESPA - Dashboard :material/analytics:")
+
+    st.subheader("Histórico da bolsa de 01/06/2023 a 26/12/2025")
+
+    st.write("Selecione o intervalo para analisar no gráfico:")
+
+    col1, col2,col3,col4 = st.columns([3,1,1,3])
+    start_date = col2.date_input("Data inicial", value=df_bolsa["Data"].max().replace(day=1),format="DD/MM/YYYY")
+    end_date = col3.date_input("Data final", value=df_bolsa["Data"].max(),format="DD/MM/YYYY")
+    start_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
+
+
+    #--------------------------
+    #INTERAÇÃO COM A BASE ORIGINAL PARA O USUÁRIO
+    #--------------------------
+    graf_principal = alt.Chart(df_bolsa).mark_line().encode(
+        alt.X("Data:T", title="Data"),
+        alt.Y("Último:Q", title="Fechamento", scale=alt.Scale(zero=False))
+    ).properties(height=400)
+
+    graf_destaque = alt.Chart(pd.DataFrame({
+        'start': [start_date],
+        'end': [end_date]
+    })).mark_rect(
+        opacity=0.3,
+        color='lightblue'
+    ).encode(
+        x='start:T',
+        x2='end:T'
+    )
+    linha_inicial = alt.Chart(pd.DataFrame({'date': [start_date]})).mark_rule(
+        color='red',
+        strokeWidth=2
+    ).encode(x='date:T')
+
+    linha_final = alt.Chart(pd.DataFrame({'date': [end_date]})).mark_rule(
+        color='red',
+        strokeWidth=2
+    ).encode(x='date:T')
+
+    # Combinar todos os gráficos
+    graf_final_camadas = alt.layer(
+        graf_principal,
+        graf_destaque,
+        linha_inicial,
+        linha_final
+    ).properties(height=400)
+
+    # Exibir o gráfico
+    col1, col2, col3 = st.columns([70,5,25])
+    col1.altair_chart(graf_final_camadas, use_container_width=True)
+
+
+
+    df_filtered = df_bolsa[
+        (df_bolsa["Data"] >= pd.to_datetime(start_date)) & 
+        (df_bolsa["Data"] <= pd.to_datetime(end_date))
+    ]
+    # Encontrar a data do maior e menor 'Último'
+    data_max_ultimo = df_filtered.loc[df_filtered['Último'].idxmax(), 'Data']
+    data_min_ultimo = df_filtered.loc[df_filtered['Último'].idxmin(), 'Data']
+
+    # Encontrar a data do maior e menor 'Var%'
+    data_max_var = df_filtered.loc[df_filtered['Var%'].idxmax(), 'Data']
+    data_min_var = df_filtered.loc[df_filtered['Var%'].idxmin(), 'Data']
+
+    col3.subheader("**Análise do período**")
+    col3.markdown("---")
+
+    # Maior Último
+    col3.markdown(f"**Maior Valor:** {df_filtered['Último'].max():.2f} | **Data:** {data_max_ultimo.strftime('%d/%m/%Y')}")
+    #col2.markdown(f"*Data:* {data_max_ultimo.strftime('%d/%m/%Y')}")
+
+    # Menor Último  
+    col3.markdown(f"**Menor Valor:** {df_filtered['Último'].min():.2f} | **Data:** {data_min_ultimo.strftime('%d/%m/%Y')}")
+    #col2.markdown(f"*Data:* {data_min_ultimo.strftime('%d/%m/%Y')}")
+
+    # Variação
+
+    col3.markdown(f"**Maior Variação (%):** {df_filtered['Var%'].max():.2f}% | **Data:** {data_max_var.strftime('%d/%m/%Y')}")
+    #col2.markdown(f"*Data:* {data_max_var.strftime('%d/%m/%Y')}")
+
+    col3.markdown(f"**Menor Variação (%):** {df_filtered['Var%'].min():.2f}% | **Data:** {data_min_var.strftime('%d/%m/%Y')}")
+    #col2.markdown(f"*Data:* {data_min_var.strftime('%d/%m/%Y')}")
+
+
+    st.subheader("**Dados do período selecionado** :material/table_chart: ")
+    st.dataframe(df_filtered,column_config={"Data":st.column_config.DateColumn(format="DD/MM/YYYY")})
+
+
+
 
 

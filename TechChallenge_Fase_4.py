@@ -187,7 +187,7 @@ with st.expander("TechChallenge Fase 4 - Data viz and production models"):
             Na ocasião, o método de treino para predição de dados que ficou com maior acurácia e o escolhido foi o AutoARIMA.
 
             Para que os dados pudessem ficar com atualização mais recente, decidimos treinar novamente o modelo com dados da bolsa até o dia 29/12/25.
-            A acurácia ficou em XX% e o desenvolvimento do treinamento pode ser visto [clicando aqui](/TechChallenge_Fase_2)   
+            A acurácia ficou em 86% e o desenvolvimento do treinamento pode ser visto [clicando aqui](/Treino_de_dados)   
             ''')
 
 st.divider()
@@ -623,6 +623,7 @@ with st.expander("Análise da base real"):
 
     st.subheader("**Dados do período selecionado** :material/table_chart: ")
     st.dataframe(df_filtered,column_config={"Data":st.column_config.DateColumn(format="DD/MM/YYYY")})
+
 
 
 

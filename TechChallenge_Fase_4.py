@@ -186,7 +186,7 @@ with st.expander("TechChallenge Fase 4 - Data viz and production models"):
             A Fase 2 foi realizada em agosto de 2025 utilizando, com dados até o dia 11.
             Na ocasião, o método de treino para predição de dados que ficou com maior acurácia e o escolhido foi o AutoARIMA.
 
-            Para que os dados pudessem ficar com atualização mais recente, decidimos treinar novamente o modelo com dados da bolsa até o dia 29/12/25.
+            Para que os dados pudessem ficar com atualização mais recente, decidimos treinar novamente o modelo com dados da bolsa até o dia 30/12/25.
             A acurácia ficou em 86% e o desenvolvimento do treinamento pode ser visto [clicando aqui](/Treino_de_Dados)   
             ''')
 
@@ -444,7 +444,7 @@ if selected_date:
                             display_data['vs Dia Anterior'] = np.where(comparacoes, "📈 Subir", "📉 Descer")
                             
                             # Mostrar tabela
-                            display_df = display_data[['Data', 'Dia da Semana', 'vs Hoje', 'vs Dia Anterior']]
+                            display_df = display_data[['Data', 'Dia da Semana', 'vs 30/12/2025', 'vs Dia Anterior']]
                             st.dataframe(
                                 display_df, 
                                 hide_index=True,
@@ -616,6 +616,7 @@ with st.expander("Análise da base real"):
 
     st.subheader("**Dados do período selecionado** :material/table_chart: ")
     st.dataframe(df_filtered,column_config={"Data":st.column_config.DateColumn(format="DD/MM/YYYY")})
+
 
 
 

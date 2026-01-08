@@ -433,7 +433,7 @@ if selected_date:
                             )
                             
                             # Calcular vs Hoje
-                            display_data['vs Hoje'] = display_data['Previsão'].apply(
+                            display_data['vs 30/12/2025'] = display_data['Previsão'].apply(
                                 lambda x: "📈 Subir" if x > last_real_value else "📉 Descer"
                             )
                             
@@ -444,14 +444,14 @@ if selected_date:
                             display_data['vs Dia Anterior'] = np.where(comparacoes, "📈 Subir", "📉 Descer")
                             
                             # Mostrar tabela
-                            display_df = display_data[['Data', 'Dia da Semana', 'vs Hoje', 'vs Dia Anterior']]
+                            display_df = display_data[['Data', 'Dia da Semana', 'vs 30/12/2025', 'vs Dia Anterior']]
                             st.dataframe(
                                 display_df, 
                                 hide_index=True,
                                 column_config={
                                     "Data": st.column_config.TextColumn("Data"),
                                     "Dia da Semana": st.column_config.TextColumn("Dia"),
-                                    "vs 30/12/2025": st.column_config.TextColumn("Tendência vs Hoje"),
+                                    "vs 30/12/2025": st.column_config.TextColumn("Tendência vs 30/12/2025"),
                                     "vs Dia Anterior": st.column_config.TextColumn("Tendência vs Dia Anterior")
                                 }
                             )
@@ -616,6 +616,7 @@ with st.expander("Análise da base real"):
 
     st.subheader("**Dados do período selecionado** :material/table_chart: ")
     st.dataframe(df_filtered,column_config={"Data":st.column_config.DateColumn(format="DD/MM/YYYY")})
+
 
 
 

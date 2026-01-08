@@ -444,7 +444,7 @@ if selected_date:
                             display_data['vs Dia Anterior'] = np.where(comparacoes, "📈 Subir", "📉 Descer")
                             
                             # Mostrar tabela
-                            display_df = display_data[['Data', 'Dia da Semana', 'vs 30/12/2025', 'vs Dia Anterior']]
+                            display_df = display_data[['Data', 'Dia da Semana', 'vs Hoje', 'vs Dia Anterior']]
                             st.dataframe(
                                 display_df, 
                                 hide_index=True,
@@ -616,6 +616,7 @@ with st.expander("Análise da base real"):
 
     st.subheader("**Dados do período selecionado** :material/table_chart: ")
     st.dataframe(df_filtered,column_config={"Data":st.column_config.DateColumn(format="DD/MM/YYYY")})
+
 
 
 

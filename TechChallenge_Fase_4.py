@@ -183,7 +183,7 @@ with st.expander("TechChallenge Fase 4 - Data viz and production models"):
     st.markdown("**Explicação:**")
 
     st.markdown('''
-            A Fase 2 foi realizada em agosto de 2025 utilizando, com dados até o dia 11.
+            A Fase 2 foi realizada em agosto de 2025 utilizando o IBOVESPA para treinamento dos dados.
             Na ocasião, o método de treino para predição de dados que ficou com maior acurácia e o escolhido foi o AutoARIMA.
 
             Para que os dados pudessem ficar com atualização mais recente, decidimos treinar novamente o modelo com dados da bolsa até o dia 30/12/25.
@@ -616,6 +616,7 @@ with st.expander("Análise da base real"):
 
     st.subheader("**Dados do período selecionado** :material/table_chart: ")
     st.dataframe(df_filtered,column_config={"Data":st.column_config.DateColumn(format="DD/MM/YYYY")})
+
 
 
 

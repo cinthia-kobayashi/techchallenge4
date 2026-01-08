@@ -241,21 +241,14 @@ percent_change = ((predicted_value - last_value) / last_value) * 100
 
 col1, col2, col3 = st.columns(3)
 
-with col1:
-    st.metric("Data da Previsão", pred_date.strftime('%d/%m/%Y'))
-
 with col2:
-    if trend == "subir":
-        st.success(f"📈 {trend.upper()}")
-    else:
-        st.error(f"📉 {trend.upper()}")
-    
-with col3:
     st.metric(
         "Confiança do Modelo",
-        f"{model_accuracy*100:.1f}%",
-        help="Acurácia histórica do modelo para previsões de 1 dia"
+        f"{model_accuracy*100:.1f}%"
     )
+    st.caption("Acurácia histórica do modelo para previsões de 1 dia")
+
+
 
 
 st.divider()

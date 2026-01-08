@@ -14,6 +14,7 @@ import altair as alt
 #CARREGAMENTO DOS DADOS E FUNÇÕES
 #--------------------------
 dados_treinados = joblib.load('dados/dados_treinados_fase4.joblib')
+
 df_bolsa = dados_treinados['df_bolsa_original']
 df_bolsa['Data'] = pd.to_datetime(df_bolsa['Data'],format='%d.%m.%Y')
 df_bolsa['Var%'] = df_bolsa['Var%'].str.replace("%","")
@@ -75,8 +76,8 @@ feriados_brasil = [
     
     # 2026
     '2026-01-01',  # Ano Novo
-    '2026-02-09',  # Carnaval
-    '2026-02-10',  # Carnaval
+    '2026-02-16',  # Carnaval
+    '2026-02-17',  # Carnaval
     '2026-04-03',  # Sexta-feira Santa
     '2026-04-21',  # Tiradentes
     '2026-05-01',  # Dia do Trabalho
@@ -174,7 +175,6 @@ with st.expander("TechChallenge Fase 4 - Data viz and production models"):
             em uma aplicação interativa utilizando o Streamlit, 
             permitindo que qualquer pessoa insira os dados e veja a previsão em tempo real.
             
-            A explicação do treino de dados para forecast de dados do IBOVESPA da fase 2 pode ser revisitada [clicando aqui](/TechChallenge_Fase_2)
                 ''')
 
 
@@ -187,7 +187,7 @@ with st.expander("TechChallenge Fase 4 - Data viz and production models"):
             Na ocasião, o método de treino para predição de dados que ficou com maior acurácia e o escolhido foi o AutoARIMA.
 
             Para que os dados pudessem ficar com atualização mais recente, decidimos treinar novamente o modelo com dados da bolsa até o dia 29/12/25.
-            A acurácia ficou em 86% e o desenvolvimento do treinamento pode ser visto [clicando aqui](/Treino_de_dados)   
+            A acurácia ficou em 86% e o desenvolvimento do treinamento pode ser visto [clicando aqui](/Treino_de_Dados)   
             ''')
 
 st.divider()
@@ -372,7 +372,7 @@ if selected_date:
                             predicted_value = forecast_df['AutoARIMA'].iloc[-1]
                             last_real_value = last_value
                             
-                            # Tendência vs Hoje
+                            # Tendência vs "Hoje"
                             trend_vs_hoje = "📈 Subir" if predicted_value > last_real_value else "📉 Descer"
                             
                             # Tendência vs Dia Anterior (útil)
@@ -401,7 +401,7 @@ if selected_date:
                                 st.metric("Data Alvo", selected_date.strftime('%d/%m/%Y'))
                             
                             with col2:
-                                st.write("**vs Hoje:**")
+                                st.write("**vs 30/12/2025:**")
                                 if "📈" in trend_vs_hoje:
                                     st.success(trend_vs_hoje)
                                 else:
@@ -458,7 +458,7 @@ if selected_date:
                                 column_config={
                                     "Data": st.column_config.TextColumn("Data"),
                                     "Dia da Semana": st.column_config.TextColumn("Dia"),
-                                    "vs Hoje": st.column_config.TextColumn("Tendência vs Hoje"),
+                                    "vs 30/12/2025": st.column_config.TextColumn("Tendência vs Hoje"),
                                     "vs Dia Anterior": st.column_config.TextColumn("Tendência vs Dia Anterior")
                                 }
                             )
@@ -536,7 +536,7 @@ with st.expander("Análise da base real"):
 
     st.title("IBOVESPA - Dashboard :material/analytics:")
 
-    st.subheader("Histórico da bolsa de 01/06/2023 a 26/12/2025")
+    st.subheader("Histórico da bolsa de 01/06/2023 a 30/12/2025")
 
     st.write("Selecione o intervalo para analisar no gráfico:")
 
@@ -623,8 +623,6 @@ with st.expander("Análise da base real"):
 
     st.subheader("**Dados do período selecionado** :material/table_chart: ")
     st.dataframe(df_filtered,column_config={"Data":st.column_config.DateColumn(format="DD/MM/YYYY")})
-
-
 
 
 
